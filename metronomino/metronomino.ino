@@ -9,7 +9,31 @@
 
   Sketch written by Pasquale Barrega on January 12nd 2016
  */
-
+ 
+ /*----------------------------Connections for this project on Arduino UNO -----------------------------------------*/
+ /* Speaker + to pin 9
+ *  Speaker - to pin 10
+ *  4.7K resistor between pin 2 ang GND (TEMPO UP input)
+ *  4.7K resistor between pin 3 and GND (TEMPO DOWN input)
+ *  4.7K resistor between pin 8 and GND (BEATS CHANGE input)
+ *  One switch between pin 2 and +5V pin (TEMPO UP switch)
+ *  One switch between pin 3 and +5V pin (TEMPO DOWN switch)
+ *  One switch between pin 8 and +5V pin (BEATS CHANGE switch)
+ *  One red LED between pin 4 by 330 Ohm series resistor and GND
+ *  One green LED between pin A0 by 330 Ohm series resistor and GND
+ * Pin 1 of Robot display to +5V pin
+ * Pin 2 of Robot display to pin 12
+ * Pin 3 of Robot display to pin 13
+ * Pin 4 of Robot display to pin 11
+ * Pin 5 of Robot display to pin 7
+ * Pin 6 of Robot display No connection
+ * Pin 7 of Robot display to pin 6
+ * Pin 8 of Robot display to pin 5
+ * Pin 9 of Robot display to +5V pin
+ * Pin 10 of Robot display to GND pin
+ 
+ /*------------------------------------ end Connections on Arduino UNO ----------------------------------------------*/
+ 
 
 
 #include <toneAC.h>
