@@ -60,7 +60,7 @@ void setup()
   TFTscreen.stroke(255, 255, 255);
   /*-------------- end display init ----------------*/
   start_screen(); //show startup screen
-  delay(3000);
+  delay(8000);
   TFTscreen.background(0, 0, 0);  //clear display
   
   /*------------------ I/O pin init -----------------*/
@@ -162,8 +162,14 @@ return;
 void start_screen(void)  //function resonsible to show startup screen
 {
   TFTscreen.setTextSize(2);
-  TFTscreen.text("Arduino\n ", 40, 40);
-  TFTscreen.text("Metronome\n ", 30, 60);
+  TFTscreen.text("Metronomino\n ", 15, 10);
+  TFTscreen.text("An Arduino",20,25);
+  TFTscreen.text("    based  ",5,40);
+  TFTscreen.text("  metronome  ",5,55);
+  TFTscreen.text("    by    ",20,70);
+  TFTscreen.text("Pasquale",40,85);
+  TFTscreen.text("Barrega",45,100);
+  //TFTscreen.text("A metronome based on Arduino\n ", 10, 60);
 
 }
 
