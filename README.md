@@ -12,3 +12,9 @@ to change beats value.
 Before upload code on the board you have to copy toneAC library in the libraries folder.
 
 This project can be modified to function with others arduino boards or custom board as you prefer.
+
+Files structure:
+
+metronomino: arduino sketch for this project
+toneAC: this folder contains library files for tone generation, install this library on arduino IDE before opening the sketch
+Prototype_photos: this folder contains some photos of the prototype. 
