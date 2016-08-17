@@ -58,7 +58,7 @@ void setup()
   /*-------------- end display init ----------------*/
   start_screen(); //show startup screen
   delay(8000);
-  TFTscreen.background(0, 0, 0);  //clear display
+  
   
   /*------------------ I/O pin init -----------------*/
   pinMode(STRONG_LED_PIN,OUTPUT);
@@ -158,97 +158,21 @@ return;
 
 void start_screen(void)  //function resonsible to show startup screen
 {
-  TFTscreen.setTextSize(2);
-  TFTscreen.text("Metronomino\n ", 15, 10);
-  TFTscreen.text("An Arduino",20,25);
-  TFTscreen.text("    based  ",5,40);
-  TFTscreen.text("  metronome  ",5,55);
-  TFTscreen.text("    by    ",20,70);
-  TFTscreen.text("Pasquale",40,85);
-  TFTscreen.text("Barrega",45,100);
-  //TFTscreen.text("A metronome based on Arduino\n ", 10, 60);
+  
 
 }
 
 void show(void)  //function responsible to show current tempo and beats data
 {
-  char tempo[4];
-  char div[2];
   
-  String vel = String(bpm);
-  String measures = String(beats);
-  vel.toCharArray(tempo, 4);
-  measures.toCharArray(div,2);
-  TFTscreen.stroke(255, 255, 255);
-  TFTscreen.setTextSize(3);
-  TFTscreen.text("Tempo ",0,0);
-  TFTscreen.setTextSize(4);
-  if (changed ==1)
-  {
-    TFTscreen.background(0, 0, 0);
-    delay(250);
-    TFTscreen.stroke(255, 255, 255);
-    TFTscreen.setTextSize(3);
-    TFTscreen.text("Tempo ",0,0);
-    TFTscreen.setTextSize(4);
-    TFTscreen.text(tempo,0,30);
-    TFTscreen.setTextSize(2);
-    TFTscreen.text("Beats ", 80, 70);
-    TFTscreen.setTextSize(3);
-    TFTscreen.text(div,100,90);
-    changed =0;
-  }  
-  else if(first ==1)
-  {
-    TFTscreen.stroke(255, 255, 255);
-    TFTscreen.setTextSize(3);
-    TFTscreen.text("Tempo ",0,0);
-    TFTscreen.setTextSize(4);
-    TFTscreen.text(tempo, 0, 30);
-    TFTscreen.setTextSize(2);
-    TFTscreen.text("Beats ", 80, 70);
-    TFTscreen.setTextSize(3);
-    TFTscreen.text(div,100,90);
-    first=0;
-   }
-  else; 
+    
 } 
  
  
 
 void check_switches(void)  //function responsible to poll switches status
 {
-  if(digitalRead(TEMPO_UP_PIN))
-  {
-    changed = 1;
-    delay(WAIT_SWITCH);
-    if(bpm < 208) bpm=bpm+1;
-    else if(bpm == 208) bpm=208;
-    else;
-  }
-
-  else if(digitalRead(TEMPO_DOWN_PIN))
-  {
-    changed = 1;
-    delay(WAIT_SWITCH);
-    if(bpm > 40) bpm=bpm-1;
-    else if(bpm == 40) bpm=40;
-    else;
-  }
   
-  else if(digitalRead(BEATS_CHANGE_PIN))
-  {
-    changed = 1;
-    delay(WAIT_SWITCH);
-    beats_count = 0;
-    strong_led=0;
-    if(beats < 7) beats=beats+1;
-    else if(beats == 7) beats = 0;
-    
-  }  
-  else
-  {
-    changed = 0;
-    
-  }  
+  
+  
 }  
