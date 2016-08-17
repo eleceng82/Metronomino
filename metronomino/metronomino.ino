@@ -1,43 +1,23 @@
 /*
-  Metronomino
+  Metronomino V2
   An arduino based metronome.
 
   This sketch show you how to make a simple metronome using Arduino UNO board, toneAC library and built in millis function
-  This project can be replicated on other Arduino boards (Leonardo, Mega etc) but keep in mind that connections change consequently
+  This project can be replicated on other Arduino boards (Leonardo, Mega etc) but keep in mind that connections change consequently.
+  
+  In version 2 I use a 128x64 graphic display precisely the display board for the reprap/prusa 3d printer wich integrates also an incremental encoder, a buzzer and a push button.
+  For this application I use display and encoder.
   
   This example code is in the public domain.
 
-  Sketch written by Pasquale Barrega on January 12nd 2016
+  Sketch written by Pasquale Barrega on August 17th 2016
  */
  
- /*----------------------------Connections for this project on Arduino UNO -----------------------------------------*/
- /* Speaker + to pin 9
- *  Speaker - to pin 10
- *  4.7K resistor between pin 2 ang GND (TEMPO UP input)
- *  4.7K resistor between pin 3 and GND (TEMPO DOWN input)
- *  4.7K resistor between pin 8 and GND (BEATS CHANGE input)
- *  One switch between pin 2 and +5V pin (TEMPO UP switch)
- *  One switch between pin 3 and +5V pin (TEMPO DOWN switch)
- *  One switch between pin 8 and +5V pin (BEATS CHANGE switch)
- *  One red LED between pin 4 by 330 Ohm series resistor and GND
- *  One green LED between pin A0 by 330 Ohm series resistor and GND
- * Pin 1 of Robot display to +5V pin
- * Pin 2 of Robot display to pin 12
- * Pin 3 of Robot display to pin 13
- * Pin 4 of Robot display to pin 11
- * Pin 5 of Robot display to pin 7
- * Pin 6 of Robot display No connection
- * Pin 7 of Robot display to pin 6
- * Pin 8 of Robot display to pin 5
- * Pin 9 of Robot display to +5V pin
- * Pin 10 of Robot display to GND pin
- 
- /*------------------------------------ end Connections on Arduino UNO ----------------------------------------------*/
  
 
 
 #include <toneAC.h>
-
+#include "U8glib.h"
 #include <math.h>
 #include "define.h"
 
@@ -48,27 +28,23 @@ void check_time(unsigned int msec);
 void start_screen(void);
 void show(void);
 
-
+U8GLIB_ST7920_128X64_1X u8g(13, 11, 7);	// SPI Com: SCK = en = 13, MOSI = rw = 11, CS = di = 7
 
 void setup() 
 {
-  
-  /*------------- display init ---------------------*/
-  
-  /*-------------- end display init ----------------*/
-  start_screen(); //show startup screen
-  delay(8000);
-  
-  
   /*------------------ I/O pin init -----------------*/
   pinMode(STRONG_LED_PIN,OUTPUT);
   pinMode(WEAK_LED_PIN,OUTPUT);
-  pinMode(TEMPO_UP_PIN,INPUT);
-  pinMode(TEMPO_DOWN_PIN,INPUT);
-  pinMode(BEATS_CHANGE_PIN,INPUT);
   digitalWrite(STRONG_LED_PIN,LOW);
   digitalWrite(WEAK_LED_PIN,LOW);
   /*------------------ end I/O pin init ---------------*/
+  u8g.setFont(u8g_font_6x10);
+  u8g.firstPage();  
+  do {
+    start_screen();  //show start screen
+  } while( u8g.nextPage() );
+  
+  delay(WAIT_START);
   
   bpm = START_BPM;
   beats = START_BEATS;
@@ -76,6 +52,7 @@ void setup()
 
 void loop() {
   //now=millis();
+ 
   show();  //view tempo and beats on display
   check_switches();  //poll switches status
   if(play_tone)  //check if it's time to play tone
@@ -116,6 +93,7 @@ void loop() {
   }  
   
   check_time(bpm);  //check time (by millis function) according to the parameter passed
+  
 }
 
 
@@ -158,13 +136,27 @@ return;
 
 void start_screen(void)  //function resonsible to show startup screen
 {
-  
+      u8g.setPrintPos(20, 8);
+      u8g.print("Metronomino V2");
+      u8g.setPrintPos(12,20);
+      u8g.print("An Arduino based");
+      u8g.setPrintPos(36,32);
+      u8g.print("Metronome");
+      u8g.setPrintPos(56,44);
+      u8g.print("By");
+      u8g.setPrintPos(16,56);
+      u8g.print("Pasquale Barrega");
 
 }
 
 void show(void)  //function responsible to show current tempo and beats data
 {
-  
+   u8g.firstPage();  
+  do {
+      u8g.setPrintPos(12,20);
+      u8g.print("Prova");
+  } while( u8g.nextPage() );   
+      
     
 } 
  
