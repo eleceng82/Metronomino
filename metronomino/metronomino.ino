@@ -37,8 +37,7 @@
 
 
 #include <toneAC.h>
-#include <TFT.h>
-#include <SPI.h>
+
 #include <math.h>
 #include "define.h"
 
@@ -49,15 +48,13 @@ void check_time(unsigned int msec);
 void start_screen(void);
 void show(void);
 
-TFT TFTscreen = TFT(cs, dc, rst);  //display object declaration
+
 
 void setup() 
 {
   
   /*------------- display init ---------------------*/
-  TFTscreen.begin();
-  TFTscreen.background(0, 0, 0);
-  TFTscreen.stroke(255, 255, 255);
+  
   /*-------------- end display init ----------------*/
   start_screen(); //show startup screen
   delay(8000);
