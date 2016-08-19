@@ -18,3 +18,9 @@
 #define TONE_DURATION    80
 #define LIGHT_DURATION   80
 /*------------------------- end code parameter definitions ----------------------------------*/
+
+
+#define START_VOLUME 10
+
+#define CIRCLE_STRONG 1
+#define CIRCLE_WEAK 2

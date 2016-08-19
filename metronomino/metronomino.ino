@@ -21,7 +21,8 @@
 #include <math.h>
 #include "define.h"
 
-unsigned int play_tone=0,setted=0,led_time=80,turn_led=0,beats=0,beats_count=0,bpm=0,startup=1,strong_led=0,changed=0,first=1;
+unsigned int play_tone=0,setted=0,led_time=80,turn_led=0,beats=0,beats_count=0,bpm=0,startup=1,strong_led=0,changed=0,first=1,volume=0;
+unsigned int show_circle=0;
 unsigned long int curr_time=0,now=0;
 
 void check_time(unsigned int msec);
@@ -38,6 +39,8 @@ void setup()
   digitalWrite(STRONG_LED_PIN,LOW);
   digitalWrite(WEAK_LED_PIN,LOW);
   /*------------------ end I/O pin init ---------------*/
+  
+  Serial.begin(9600);
   u8g.setFont(u8g_font_6x10);
   u8g.firstPage();  
   do {
@@ -46,14 +49,21 @@ void setup()
   
   delay(WAIT_START);
   
-  bpm = START_BPM;
-  beats = START_BEATS;
+  //bpm = START_BPM;
+  bpm = 120;
+  //beats = START_BEATS;
+  beats =4;
+  //beats=0;
+  volume=START_VOLUME;
+  show_circle=1;
  }
 
 void loop() {
   //now=millis();
  
   show();  //view tempo and beats on display
+  //if(show_circle == 1) show_circle++;
+  //else show_circle=1;
   check_switches();  //poll switches status
   if(play_tone)  //check if it's time to play tone
   {
@@ -62,12 +72,15 @@ void loop() {
         if(beats_count==0)
         {
           strong_led=1; //if beats count = 0 enable strong led and play high tone
-          toneAC(1000,10,TONE_DURATION,true);
+          show_circle=1;
+          toneAC(1000,volume,TONE_DURATION,true);
         }  
        else 
        {
           strong_led=0; //otherwise disable strong led and play low tone
-          toneAC(500,10,TONE_DURATION,true);
+          if(show_circle == 1) show_circle++;
+          else show_circle=1;
+          toneAC(500,volume,TONE_DURATION,true);
        }  
        beats_count++;
        if(beats_count >= beats) beats_count=0;
@@ -80,10 +93,12 @@ void loop() {
       if(strong_led)
       {
         digitalWrite(STRONG_LED_PIN,HIGH);
+        //show_circle=CIRCLE_STRONG;  //aggiunto
       }  
       else if(strong_led == 0)
       {
         digitalWrite(WEAK_LED_PIN,HIGH);
+        //show_circle=CIRCLE_WEAK;  //aggiunto
       }  
   } 
   else
@@ -93,15 +108,14 @@ void loop() {
   }  
   
   check_time(bpm);  //check time (by millis function) according to the parameter passed
-  
+  //Serial.println(millis()-now);
 }
 
 
 void check_time(unsigned int bpm)
 {
-  unsigned int msec=0;
-  
-  msec=floor((1.0 / (bpm / 60.0)) * 1000.0) - 35;  //converts bpm to milliseconds
+  float msec=0;
+  msec=(1.0 / (bpm / 60.0) * 1000.0)-125.0;  //converts bpm to milliseconds
   //Serial.println(msec);
   if(setted==0)
   {
@@ -118,7 +132,7 @@ void check_time(unsigned int bpm)
       
       turn_led=0;
     } 
-     if((millis() - curr_time) >= msec)
+     if((millis() - curr_time) >= (unsigned int)msec)
     {
       curr_time=0;
       setted=0;
@@ -151,10 +165,49 @@ void start_screen(void)  //function resonsible to show startup screen
 
 void show(void)  //function responsible to show current tempo and beats data
 {
+  int i=0;
    u8g.firstPage();  
   do {
-      u8g.setPrintPos(12,20);
-      u8g.print("Prova");
+      for(i=0; i < 64; i++)
+      {
+        u8g.drawPixel(35,i);
+      }  
+      
+      for(i=0; i < 35; i++)
+      {
+        u8g.drawPixel(i,20);
+      }  
+      
+      for(i=0; i < 35; i++)
+      {
+        u8g.drawPixel(i,42);
+      } 
+     
+      for(i=63; i > 53; i--)
+      {
+        u8g.drawHLine(76, i,10);
+      } 
+      
+      u8g.drawHLine(36, 12,92);
+     
+      u8g.setFont(u8g_font_5x8);     
+      u8g.drawStr(4, 7, "TEMPO");  
+      u8g.drawStr(4, 28, "BEATS");
+      u8g.drawStr(2, 50, "VOLUME");
+      if(bpm <= 99) u8g.setPrintPos(12,16);
+      else u8g.setPrintPos(8,16);
+      u8g.print(bpm);
+      
+      u8g.setPrintPos(13,38);
+      u8g.print(beats);
+      
+      if(volume <= 9) u8g.setPrintPos(12,60);
+      else u8g.setPrintPos(10,60);
+      u8g.print(volume);
+      
+      if(show_circle==CIRCLE_STRONG) u8g.drawDisc(44,5,4);
+      else if(show_circle==CIRCLE_WEAK) u8g.drawDisc(120,5,4); 
+       
   } while( u8g.nextPage() );   
       
     
