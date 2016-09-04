@@ -20,15 +20,30 @@
 #include "U8glib.h"
 #include <math.h>
 #include "define.h"
+#include <Encoder.h>
+
+
+//#define ENCODER_DO_NOT_USE_INTERRUPTS
 
 unsigned int play_tone=0,setted=0,led_time=80,turn_led=0,beats=0,beats_count=0,bpm=0,startup=1,strong_led=0,changed=0,first=1,volume=0;
-unsigned int show_circle=0;
+unsigned int show_circle=0,item=0;
 unsigned long int curr_time=0,now=0;
+
+
+
+volatile int lastEncoded = 0;
+volatile long encoderValue = 0;
+ 
+long lastencoderValue = 0;
+ 
+int lastMSB = 0;
+int lastLSB = 0;
 
 void check_time(unsigned int msec);
 void start_screen(void);
 void show(void);
 
+Encoder myEnc(5, 6);
 U8GLIB_ST7920_128X64_1X u8g(13, 11, 7);	// SPI Com: SCK = en = 13, MOSI = rw = 11, CS = di = 7
 
 void setup() 
@@ -38,7 +53,13 @@ void setup()
   pinMode(WEAK_LED_PIN,OUTPUT);
   digitalWrite(STRONG_LED_PIN,LOW);
   digitalWrite(WEAK_LED_PIN,LOW);
+  pinMode(CONFIRM_PIN,INPUT_PULLUP);
+  pinMode(2,INPUT_PULLUP);
+  pinMode(3,INPUT_PULLUP);
   /*------------------ end I/O pin init ---------------*/
+  
+  attachInterrupt(0, updateEncoder, CHANGE);
+  attachInterrupt(1, updateEncoder, CHANGE);
   
   Serial.begin(9600);
   u8g.setFont(u8g_font_6x10);
@@ -60,8 +81,12 @@ void setup()
 
 void loop() {
   //now=millis();
- 
-  show();  //view tempo and beats on display
+  long int newpos = myEnc.read();
+  if(item==1) upd_val(40, 208, item);
+  else if(item==2) upd_val(0, 7, item);
+  else if(item==3) upd_val(0, 10, item);
+   
+   show();  //view tempo and beats on display
   //if(show_circle == 1) show_circle++;
   //else show_circle=1;
   check_switches();  //poll switches status
@@ -205,6 +230,24 @@ void show(void)  //function responsible to show current tempo and beats data
       else u8g.setPrintPos(10,60);
       u8g.print(volume);
       
+      switch(item)
+      {
+       case 1:
+         u8g.setPrintPos(28,18);
+         u8g.print('O');
+         break;
+       case 2:
+         u8g.setPrintPos(28,38);
+         u8g.print('O');
+         break;
+       case 3:
+         u8g.setPrintPos(28,60);
+         u8g.print('O');
+         break;  
+       default:
+        break;
+      }  
+      
       if(show_circle==CIRCLE_STRONG) u8g.drawDisc(44,5,4);
       else if(show_circle==CIRCLE_WEAK) u8g.drawDisc(120,5,4); 
        
@@ -217,7 +260,68 @@ void show(void)  //function responsible to show current tempo and beats data
 
 void check_switches(void)  //function responsible to poll switches status
 {
+  unsigned int c=0;
+  
+  if(digitalRead(CONFIRM_PIN)==0)
+  {
+    delay(WAIT_SWITCH);
+    if(item < 3) item++;
+    else item=0;
+  }  
+    
+} 
+
+void upd_val(unsigned int min_value, unsigned int max_value, unsigned int parameter)
+{
+  int enc;
+  
+  switch(parameter)
+  {
+    case 1:
+     //Serial.println(enc);
+     
+       
+       if (encoderValue <=min_value) bpm=min_value;
+       else if(encoderValue > max_value) bpm=max_value;
+       else bpm=encoderValue;
+       
+     break;
+    
+    case 2:
+       enc=map(encoderValue,0,255,min_value,max_value);
+       if(enc <=min_value) beats=min_value;
+       else if(enc > max_value) beats=max_value;
+       else beats=enc;
+       
+     break;
+    case 3:
+       enc=map(encoderValue,0,255,min_value,max_value);
+       if(encoderValue <=min_value) volume=min_value;
+       else if(encoderValue > max_value) volume=max_value;
+       else volume=encoderValue;
+       
+     break;
+    default:
+     break;
+   }  
   
   
-  
-}  
+} 
+
+void updateEncoder(){
+  int MSB = digitalRead(2); //MSB = most significant bit
+  int LSB = digitalRead(3); //LSB = least significant bit
+ 
+  int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
+  int sum  = (lastEncoded << 2) | encoded; //adding it to the previous encoded value
+ 
+  if((sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) && (encoderValue < 255)) encoderValue ++;
+  if((sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) && (encoderValue > 0)) encoderValue --;
+ 
+  lastEncoded = encoded; //store this value for next time
+}
+
+
+/*long newPos = myEnc.read();
+  if (newPos != position) {
+    position = newPos;*/
