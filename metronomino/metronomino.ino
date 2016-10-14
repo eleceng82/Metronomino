@@ -208,13 +208,13 @@ void show(void)  //function responsible to show current tempo and beats data
         u8g.drawPixel(i,42);
       } 
      
-      for(i=63; i > 53; i--)
+      /*for(i=63; i > 53; i--)
       {
         u8g.drawHLine(76, i,10);
-      } 
+      } */
       
       u8g.drawHLine(36, 12,92);
-     
+      u8g.drawStr(50, 40, "FABLAB MESSINA");
       u8g.setFont(u8g_font_5x8);     
       u8g.drawStr(4, 7, "TEMPO");  
       u8g.drawStr(4, 28, "BEATS");
